@@ -24,32 +24,57 @@ const Domio = {
 
   resize(file: DomioFile, pixel: number): Promise<DomioFile> {
     const promise = new Promise<DomioFile>((resolve, reject) => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const image = new Image();
-        image.crossOrigin = "Anonymous";
-        image.addEventListener('load', function() {
-            let dstWidth, dstHeight;
-            if (this.width > this.height) {
-              dstWidth = pixel;
-              dstHeight = this.height * pixel / this.width;
-            } else {
-              dstHeight = pixel;
-              dstWidth = this.width * pixel / this.height;
-            }
-            canvas.width = dstWidth;
-            canvas.height = dstHeight;
-            ctx.drawImage(this, 0, 0, this.width, this.height, 0, 0, dstWidth, dstHeight);
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const image = new Image();
+      image.crossOrigin = "Anonymous";
+      image.addEventListener("load", function() {
+        let dstWidth, dstHeight;
+        if (this.width > this.height) {
+          dstWidth = pixel;
+          dstHeight = (this.height * pixel) / this.width;
+        } else {
+          dstHeight = pixel;
+          dstWidth = (this.width * pixel) / this.height;
+        }
+        canvas.width = dstWidth;
+        canvas.height = dstHeight;
+        ctx.drawImage(
+          this,
+          0,
+          0,
+          this.width,
+          this.height,
+          0,
+          0,
+          dstWidth,
+          dstHeight
+        );
 
-            const dataURL = parseDataURL(canvas.toDataURL());
-            const bytes = dataURL2Uint8Array(dataURL.data);
-            const result = {...file};
-            result.dataURL = dataURL;
-            result.bytes = bytes;
-            result.size = bytes.length;
-            resolve(result);
-        });
-        image.src = file.dataURL.src;
+        const dataURL = parseDataURL(canvas.toDataURL());
+        const bytes = dataURL2Uint8Array(dataURL.data);
+        const result = { ...file };
+        result.dataURL = dataURL;
+        result.bytes = bytes;
+        result.size = bytes.length;
+        resolve(result);
+      });
+      image.src = file.dataURL.src;
+    });
+    return promise;
+  },
+
+  toImage(src: DomioFile): Promise<HTMLImageElement> {
+    return this.toImageByDataURL(src.dataURL.src);
+  },
+
+  toImageByDataURL(dataURL: string): Promise<HTMLImageElement> {
+    const promise = new Promise<HTMLImageElement>((resolve, reject) => {
+      const img = document.createElement("img");
+      img.addEventListener("load", () => {
+        resolve(img);
+      });
+      img.src = dataURL;
     });
     return promise;
   }
@@ -69,7 +94,7 @@ function parseDataURL(dataURL: string): DataURL {
   if (!match || match.length < 4) {
     throw new Error("invalid dataURL");
   }
-  const mediaType = match[1] ? match[1] : 'unknown/unknown';
+  const mediaType = match[1] ? match[1] : "unknown/unknown";
   const isBase64 = match[2] && match[2].toLowerCase() === "base64";
   const data = match[3];
 
