@@ -1,0 +1,7 @@
+#dropArea {
+    height: 500px;
+
+    &.hover {
+        border: 2px dotted green;
+    }
+}
