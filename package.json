@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "repository": "https://github.com/myomi/domio",
-  "author": "MITSUYA MYOUCHIN <m.myouchin@nakamura-joho.co.jp>",
+  "author": "myomi <myomit@gmail.com>",
   "license": "MIT",
   "scripts": {
     "start": "parcel sample/*.html"
